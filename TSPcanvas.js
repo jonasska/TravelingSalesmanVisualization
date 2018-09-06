@@ -24,7 +24,7 @@ function clickEventListener(event)
     c.draw();
     c.drawAllPaths();
     circles.push(c);
-    document.getElementById("canvasInfo").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solitions:" + factorialize(circles.length);
+    document.getElementById("canvasInfo").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solutions:" + factorialize(circles.length);
 
     prepareOptProblem();
 };
