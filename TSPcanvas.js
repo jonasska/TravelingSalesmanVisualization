@@ -24,7 +24,7 @@ function clickEventListener(event)
     c.draw();
     c.drawAllPaths();
     circles.push(c);
-    document.getElementById("nodes").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solitions:" + factorialize(circles.length);
+    document.getElementById("canvasInfo").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solitions:" + factorialize(circles.length);
 
     prepareOptProblem();
 };
@@ -58,8 +58,8 @@ function circle(x,y)
             }
             ctx.moveTo(x-Math.cos(angle)*15*sign,y-Math.sin(angle)*15*sign);
             ctx.lineTo(c.x+Math.cos(angle)*15*sign,c.y+Math.sin(angle)*15*sign);
-            console.log("drawing paths",x,y,"   ",c.x,c.y);
-            console.log("angle",angle,"   cos",Math.cos(angle),"  sin:",Math.sin(angle));
+            //console.log("drawing paths",x,y,"   ",c.x,c.y);
+            //console.log("angle",angle,"   cos",Math.cos(angle),"  sin:",Math.sin(angle));
         });
         ctx.closePath();
         ctx.stroke(); 
