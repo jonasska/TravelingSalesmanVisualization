@@ -1,8 +1,11 @@
-const INIT_PHERO_LEVEL = 1;
-const ITERATIONS = 5;
-const ANTS = 2;
-const q0 = 0.5;
+const PHEROMONE_UPDATE_RATE = 1;
+const MIN_PHERO_LEVEL = 0.1;
+const DEFAULT_PHERO_LEVEL = 1;
+const ITERATIONS = 1000;
+const ANTS = 20;
+const q0 = 0.1;
 const beta = 1;
+const rho = 0.1;
 
 var nodes=[];
 var globalPhero =[];
@@ -28,13 +31,13 @@ function prepareOptProblem(){
             var path = [j, distance]; // [destination node , distance(heuristic)]
             node.push(path);
             node.sort(comparePaths,1);
-            nodephero.push(INIT_PHERO_LEVEL);
+            nodephero.push(DEFAULT_PHERO_LEVEL);
         }
         //console.log(node);
         nodes.push(node);
         globalPhero.push(nodephero);
     }
-    console.log(nodes);
+    //console.log(nodes);
 
     if (nodes.length>=4){
         ACOsearch();
@@ -57,8 +60,9 @@ function ACOsearch(){
         for (var a=0;a<ANTS;a++)
         {
             var ant = new Ant(localPhero);
+            //console.log(JSON.stringify(localPhero));
             ant.buildTravelingPlan();
-
+            //console.log(JSON.stringify(localPhero));
 
             if (localBestAnt == null){
                 localBestAnt = ant;
@@ -75,15 +79,46 @@ function ACOsearch(){
             globalBestAnt = localBestAnt;
         }
 
-        // evaporate pheromone
-        // update global pheromone
+        evaporateGlobalPheromone();
+        updateGlobalPheromone(globalBestAnt);
+        updateGlobalPheromone(localBestAnt);
 
     }
     console.log("finished ACO search");
     console.log("final fitness:", globalBestAnt.fitness," solution:",globalBestAnt.solution);
 }
 
+function updateGlobalPheromone(ant)
+{
+    for(var i=0;i<ant.solution.length-1;i++)
+    {
+        var current = ant.solution[i];
+        var next = ant.solution[i+1];
+        globalPhero[current][next] += (rho * PHEROMONE_UPDATE_RATE /*   *(q1/heuristic)   */);
+        if (globalPhero[current][next]<MIN_PHERO_LEVEL)
+        {
+            globalPhero[current][next]=MIN_PHERO_LEVEL;
+        }
+    }
+    var current = ant.solution[ant.solution.length-1];
+    var next = ant.solution[0];
+    globalPhero[current][next] += (rho * PHEROMONE_UPDATE_RATE /*   *(q1/heuristic)   */);
+    if (globalPhero[current][next]<MIN_PHERO_LEVEL)
+    {
+        globalPhero[current][next]=MIN_PHERO_LEVEL;
+    }
 
+}
+
+function evaporateGlobalPheromone()
+{
+    for(var i=0;i<globalPhero.length;i++){
+        for(var j=0;j<globalPhero[i].length;j++)
+        {
+            globalPhero[i][j]*=(1-rho);
+        }
+    }
+}
 
 function Ant(phero){
     this.phero = phero;
@@ -105,7 +140,7 @@ function Ant(phero){
             }
             
         }
-        console.log(this.solution);
+        //console.log(this.solution);
         this.evaluateSolution();
     }
 
@@ -182,6 +217,10 @@ function Ant(phero){
 
     this.addDestinationToSolution = function(currentNode, destination){
         this.solution.push(nodes[currentNode][destination][0]);
+        // local pheromone update
+        var p = this.phero[currentNode][destination];
+        p = ((1 - rho) * p) + (rho * DEFAULT_PHERO_LEVEL);
+        this.phero[currentNode][destination] = p;
     }
 
     this.evaluateSolution = function(){
@@ -206,6 +245,6 @@ function Ant(phero){
             fit +=l;
         }
         this.fitness = fit;
-        console.log("fitness",fit);
+        //console.log("fitness",fit);
     }
 }
