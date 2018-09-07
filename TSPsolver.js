@@ -7,6 +7,8 @@ const beta = 1;
 var nodes=[];
 var globalPhero =[];
 
+var globalBestAnt;
+
 
 function prepareOptProblem(){
     
@@ -47,23 +49,41 @@ function comparePaths(pa,pb){
 function ACOsearch(){
     
     console.log("start ACO search");
+    globalBestAnt = null;
     for (var iter =0;iter<ITERATIONS;iter++)
     {
         var localPhero = JSON.parse(JSON.stringify(globalPhero)); // deep copy 
-
+        var localBestAnt = null;
         for (var a=0;a<ANTS;a++)
         {
             var ant = new Ant(localPhero);
             ant.buildTravelingPlan();
+
+
+            if (localBestAnt == null){
+                localBestAnt = ant;
+            }
+            else if(localBestAnt.fitness>ant.fitness){
+                localBestAnt = ant;
+            }
         }
 
-        // take best solution
+        if (globalBestAnt == null){
+            globalBestAnt = localBestAnt;
+        }
+        else if(globalBestAnt.fitness>localBestAnt.fitness){
+            globalBestAnt = localBestAnt;
+        }
 
         // evaporate pheromone
         // update global pheromone
 
     }
+    console.log("finished ACO search");
+    console.log("final fitness:", globalBestAnt.fitness," solution:",globalBestAnt.solution);
 }
+
+
 
 function Ant(phero){
     this.phero = phero;
