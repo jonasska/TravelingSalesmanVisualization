@@ -16,6 +16,49 @@ function loaded() {
     canvas.addEventListener("click",clickEventListener);
 };
 
+function drawSolution(solution)
+{
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (var i=0;i<solution.length-1;i++)
+    {
+        drawCircle(circles[solution[i]]);
+        drawPath(circles[solution[i]],circles[solution[i+1]]);
+    }
+    drawCircle(circles[solution[solution.length-1]]);
+    drawPath(circles[solution[solution.length-1]],circles[solution[0]]);
+
+}
+
+function drawCircle(c)
+{
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#7777ff";
+    ctx.beginPath();
+    ctx.arc(c.x,c.y,10,0,2*Math.PI);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function drawPath(c1, c2)
+{
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.strokeStyle = "#ff0000"
+    var dx = c1.x - c2.x;
+    var dy = c1.y - c2.y;
+    var angle = Math.atan(dy/dx);
+    var sign = 1;
+    if (dx>=0){
+        sign = -1;
+    }
+    ctx.moveTo(c2.x-Math.cos(angle)*15*sign,c2.y-Math.sin(angle)*15*sign);
+    ctx.lineTo(c1.x+Math.cos(angle)*15*sign,c1.y+Math.sin(angle)*15*sign);
+    ctx.closePath();
+    ctx.stroke(); 
+}
+
 function clickEventListener(event)
 {
     var x = event.pageX - canvasRect.left;
@@ -27,6 +70,7 @@ function clickEventListener(event)
     document.getElementById("canvasInfo").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solutions:" + factorialize(circles.length);
 
     prepareOptProblem();
+    drawSolution(globalBestAnt.solution);
 };
 
 function circle(x,y)
@@ -64,6 +108,7 @@ function circle(x,y)
         ctx.closePath();
         ctx.stroke(); 
     }
+
 }
 
 function factorialize(num) {
