@@ -86,6 +86,7 @@ function Ant(phero){
             
         }
         console.log(this.solution);
+        this.evaluateSolution();
     }
 
     this.isTourComplete = function(){
@@ -163,4 +164,28 @@ function Ant(phero){
         this.solution.push(nodes[currentNode][destination][0]);
     }
 
+    this.evaluateSolution = function(){
+        var fit = 0;
+        //console.log("nodes",nodes);
+        for(var i=0;i<this.solution.length-1;i++)
+        {
+            //console.log("from to",this.solution[i],this.solution[i+1]);
+            var cnode = nodes[this.solution[i]];
+            var l = -1;
+            for (var j =0;j<cnode.length;j++)
+            {
+                if (cnode[j][0]==this.solution[i+1])
+                {
+                    l = nodes[this.solution[i]][j][1];
+                }
+            }
+
+            if (l==-1)
+                console.log("something wrong");
+             
+            fit +=l;
+        }
+        this.fitness = fit;
+        console.log("fitness",fit);
+    }
 }
