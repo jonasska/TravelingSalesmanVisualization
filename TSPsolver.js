@@ -1,16 +1,19 @@
 const PHEROMONE_UPDATE_RATE = 1;
 const MIN_PHERO_LEVEL = 0.1;
 const DEFAULT_PHERO_LEVEL = 1;
-const ITERATIONS = 1000;
+const ITERATIONS = 2000;
 const ANTS = 20;
-const q0 = 0.1;
-const beta = 1;
+const q0 = 0.2;
+const q1 = 10;
+const beta = 0.5;
 const rho = 0.1;
 
 var nodes=[];
 var globalPhero =[];
 
 var globalBestAnt;
+
+
 
 
 function prepareOptProblem(){
@@ -90,24 +93,34 @@ function ACOsearch(){
 
 function updateGlobalPheromone(ant)
 {
-    for(var i=0;i<ant.solution.length-1;i++)
+    for(var i=0;i<ant.solution.length;i++)
     {
         var current = ant.solution[i];
-        var next = ant.solution[i+1];
-        globalPhero[current][next] += (rho * PHEROMONE_UPDATE_RATE /*   *(q1/heuristic)   */);
+        var nextnode;
+
+        if (i == ant.solution.length-1)
+        {
+            nextnode = ant.solution[0];
+        }else 
+        {
+            nextnode = ant.solution[i+1];
+        }
+        
+        var next = -1;
+        for (var j = 0;j<nodes[current].length;j++)
+        {
+            if (nodes[current][j][0]==nextnode)
+            {
+                next=j;
+            }
+        }
+        var heuristic = nodes[current][next][1];
+        globalPhero[current][next] += (rho * PHEROMONE_UPDATE_RATE * (q1/Math.sqrt(heuristic))); // next for destination node here untangle 
         if (globalPhero[current][next]<MIN_PHERO_LEVEL)
         {
             globalPhero[current][next]=MIN_PHERO_LEVEL;
         }
     }
-    var current = ant.solution[ant.solution.length-1];
-    var next = ant.solution[0];
-    globalPhero[current][next] += (rho * PHEROMONE_UPDATE_RATE /*   *(q1/heuristic)   */);
-    if (globalPhero[current][next]<MIN_PHERO_LEVEL)
-    {
-        globalPhero[current][next]=MIN_PHERO_LEVEL;
-    }
-
 }
 
 function evaporateGlobalPheromone()
@@ -129,7 +142,9 @@ function Ant(phero){
         while (!this.isTourComplete()){
 
             if (this.solution.length==0){// add first random node to solution
-                var n = Math.floor(Math.random() * nodes.length);
+                var rand =  Math.random();
+                var n = Math.floor(rand * nodes.length);
+                //console.log(rand);
                 this.solution.push(n);
             }
             var currentNode = this.solution[this.solution.length-1];
@@ -198,7 +213,7 @@ function Ant(phero){
         if (!this.destVisited(currentNode,dest))
         {
             var h = 1000/nodes[currentNode][dest][1];
-            var p = phero[currentNode][dest];
+            var p = phero[currentNode][dest]; // todo destination node here 
             return p * Math.pow(h,beta);
         }
         return 0;
@@ -226,19 +241,27 @@ function Ant(phero){
     this.evaluateSolution = function(){
         var fit = 0;
         //console.log("nodes",nodes);
-        for(var i=0;i<this.solution.length-1;i++)
+        for(var i=0;i<this.solution.length;i++)
         {
             //console.log("from to",this.solution[i],this.solution[i+1]);
             var cnode = nodes[this.solution[i]];
-            var l = -1;
+            var nextindex = -1;
+
             for (var j =0;j<cnode.length;j++)
             {
-                if (cnode[j][0]==this.solution[i+1])
-                {
-                    l = nodes[this.solution[i]][j][1];
+                if (i<cnode.length){
+                    if (cnode[j][0]==this.solution[i+1]){
+                        nextindex = j;
+                    }
+                }else{
+                    if (cnode[j][0]==this.solution[0]){
+                        nextindex = j;
+                    }
                 }
             }
 
+            var l = -1;
+            l = nodes[this.solution[i]][nextindex][1];  
             if (l==-1)
                 console.log("something wrong");
              

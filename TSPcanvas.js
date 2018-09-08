@@ -129,3 +129,8 @@ function nPaths(num) {
         return (num + nPaths(num - 1) -1);
     }
 }
+
+function resolveProblem(){
+    prepareOptProblem();
+    drawSolution(globalBestAnt.solution);
+}
