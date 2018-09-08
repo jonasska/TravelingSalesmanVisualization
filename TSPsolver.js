@@ -1,7 +1,7 @@
 const PHEROMONE_UPDATE_RATE = 1;
 const MIN_PHERO_LEVEL = 0.1;
 const DEFAULT_PHERO_LEVEL = 1;
-const ITERATIONS = 2000;
+var ITERATIONS = 1000;
 const ANTS = 20;
 const q0 = 0.2;
 const q1 = 10;
@@ -14,7 +14,12 @@ var globalPhero =[];
 var globalBestAnt;
 
 
+function solveACO(iter){
+    ITERATIONS = iter;
 
+    prepareOptProblem();
+    ACOsearch();
+}
 
 function prepareOptProblem(){
     
@@ -41,11 +46,6 @@ function prepareOptProblem(){
         globalPhero.push(nodephero);
     }
     //console.log(nodes);
-
-    if (nodes.length>=4){
-        ACOsearch();
-    }
-    
 }
 
 function comparePaths(pa,pb){

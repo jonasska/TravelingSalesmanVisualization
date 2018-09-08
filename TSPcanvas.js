@@ -69,8 +69,8 @@ function clickEventListener(event)
     circles.push(c);
     document.getElementById("canvasInfo").innerHTML = "number of nodes:" + circles.length + " number of edges:" + nPaths(circles.length) + "number of possible solutions:" + factorialize(circles.length);
 
-    prepareOptProblem();
-    drawSolution(globalBestAnt.solution);
+    resolveProblem();
+
 };
 
 function circle(x,y)
@@ -131,6 +131,10 @@ function nPaths(num) {
 }
 
 function resolveProblem(){
-    prepareOptProblem();
-    drawSolution(globalBestAnt.solution);
+    if (circles.length>=4){
+        var iter = document.getElementById("ACOiterations").value;
+        console.log(iter);
+        solveACO(iter);
+        drawSolution(globalBestAnt.solution);
+    }
 }
