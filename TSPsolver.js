@@ -3,9 +3,9 @@ const MIN_PHERO_LEVEL = 0.1;
 const DEFAULT_PHERO_LEVEL = 1;
 var ITERATIONS = 1000;
 const ANTS = 20;
-const q0 = 0.2;
+const q0 = 0.1;
 const q1 = 10;
-const beta = 0.5;
+const beta = 4;
 const rho = 0.1;
 
 var nodes=[];
