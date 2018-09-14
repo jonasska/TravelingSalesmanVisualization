@@ -16,6 +16,14 @@ function loaded() {
     canvas.addEventListener("click",clickEventListener);
 };
 
+function load() {
+    console.log("load event detected!");
+    canvas = document.getElementById("myCanvas");
+    canvasRect = canvas.getBoundingClientRect();
+    canvas.addEventListener("click",clickEventListener);
+}
+
+
 function drawSolution(solution)
 {
     var ctx = canvas.getContext("2d");
